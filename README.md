@@ -1,134 +1,174 @@
 # OpenBot
 
-OpenBot 是一个功能丰富的开源AI助手项目，旨在提供类似于先进AI助手的能力，包括自然语言处理、任务自动化、文件操作、命令执行等多种能力。
+<div align="center">
+  <h3>一个功能丰富的开源AI助手项目</h3>
+  <p>提供类似于先进AI助手的能力，包括自然语言处理、任务自动化、文件操作、命令执行等多种能力</p>
+</div>
 
-## 项目简介
+## ✨ 特性
 
-OpenBot是一个高度可扩展的AI助手，具备以下核心功能：
+- **🤖 智能对话** - 自然语言理解和生成
+- **🛠️ 工具使用** - 读写文件、执行命令、搜索网络等
+- **⚡ 任务自动化** - 自动化各种日常任务
+- **📂 文件管理** - 读取、写入和编辑文件
+- **💻 命令执行** - 安全地执行系统命令
+- **🧠 记忆管理** - 保持对话上下文
+- **🔗 API集成** - 集成各种外部服务
+- **🇨🇳 国产渠道** - 支持飞书、企业微信、钉钉
+- **📊 监控服务** - 主动监测和提醒功能
+- **🔄 任务调度** - 自动化任务执行和管理
 
-- **自然语言理解和生成** - 基于先进的大语言模型
-- **智能工具使用** - 能够读写文件、执行命令、搜索网络等
-- **任务自动化执行** - 自动化各种日常任务
-- **文件管理系统** - 读取、写入和编辑文件
-- **命令行接口** - 执行系统命令
-- **记忆管理** - 保持对话上下文
-- **多种API集成** - 集成各种外部服务
+## 🚀 快速开始
 
-## 安装指南
+### 系统要求
+- **Node.js** 14.x 或更高版本
+- **npm** (随Node.js一起安装)
 
-### 前提条件
-- Node.js 14.x 或更高版本
-- npm (随Node.js一起安装)
+### 安装
 
-### 安装步骤
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/zhugejiancheng/openbot.git
+   cd openbot
+   ```
 
-1. 克隆项目：
-```bash
-git clone https://github.com/zhugejiancheng/openbot.git
-cd openbot
-```
+2. **运行交互式安装向导** (推荐)
+   ```bash
+   ./install.sh
+   ```
+   
+   或手动安装：
+   ```bash
+   npm install
+   ```
 
-2. 安装依赖：
-```bash
-npm install
-```
+3. **配置环境** (可选但推荐)
+   ```bash
+   cp .env.example .env
+   # 编辑 .env 文件，添加您的API密钥
+   ```
 
-或者使用安装脚本：
-```bash
-./install.sh
-```
+### 启动服务
 
-3. 配置环境变量：
-```bash
-cp .env.example .env
-# 编辑 .env 文件，填入相应的API密钥
-```
-
-## 使用方法
-
-### 启动服务器
-
-开发模式（需要先安装nodemon）：
-```bash
-npm install -g nodemon  # 仅首次
-npm run dev
-```
-
-生产模式：
+**生产模式：**
 ```bash
 npm start
 ```
 
-或使用启动脚本：
+**开发模式：**
+```bash
+npm run dev  # 需要先安装 nodemon: npm install -g nodemon
+```
+
+**或使用启动脚本：**
 ```bash
 ./start.sh
 ```
 
-### API端点
+服务启动后，访问 `http://localhost:3000` 查看基本信息。
 
-- `GET /` - 基本信息和可用功能
+## 🛠️ API 接口
+
+### 基础接口
+- `GET /` - 获取基本信息
 - `GET /health` - 健康检查
 - `POST /chat` - 与OpenBot对话
+
+### 工具接口
 - `GET /tools` - 获取可用工具列表
+- `POST /tool/:toolName` - 执行特定工具
+
+### 对话接口
 - `GET /conversation/:userId` - 获取对话历史
 - `POST /conversation/reset/:userId` - 重置对话
-- `POST /tool/:toolName` - 直接执行特定工具
 
-### 示例请求
+### 国产渠道接口
+- `GET /channels` - 获取可用渠道
+- `POST /channels/:channelName/send` - 发送消息到渠道
+- `POST /channels/:channelName/send-rich` - 发送富文本消息
+- `GET /channels/:channelName/user/:userId` - 获取用户信息
+- `POST /channels/:channelName/callback` - 处理渠道事件
 
+### 监控和任务接口
+- `POST /monitor/add` - 添加监控器
+- `GET /monitor/status` - 监控状态
+- `GET /monitor/alerts` - 获取警报
+- `POST /tasks/add` - 添加任务
+- `POST /tasks/execute/:taskId` - 执行任务
+- `POST /tasks/schedule` - 计划任务
+- `GET /tasks/status/:taskId?` - 任务状态
+- `GET /tasks/history` - 任务历史
+
+## 🔧 配置选项
+
+在 `.env` 文件中可以配置：
+
+| 变量 | 描述 | 默认值 |
+|------|------|--------|
+| `PORT` | 服务器端口 | `3000` |
+| `NODE_ENV` | 运行环境 | `development` |
+| `LOG_LEVEL` | 日志级别 | `info` |
+| `OPENAI_API_KEY` | OpenAI API密钥 | - |
+| `MODEL_NAME` | AI模型名称 | `gpt-3.5-turbo` |
+
+### 国产渠道配置
+- **飞书 (Feishu)**: `FEISHU_APP_ID`, `FEISHU_APP_SECRET`, 等
+- **企业微信 (WeChat Work)**: `WECHAT_WORK_CORP_ID`, `WECHAT_WORK_AGENT_ID`, 等
+- **钉钉 (DingTalk)**: `DINGTALK_APP_KEY`, `DINGTALK_APP_SECRET`, 等
+
+## 📖 使用示例
+
+### 与OpenBot对话
 ```bash
-# 与OpenBot对话
 curl -X POST http://localhost:3000/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, OpenBot!", "userId": "test-user"}'
-
-# 获取可用工具
-curl http://localhost:3000/tools
-
-# 执行特定工具
-curl -X POST http://localhost:3000/tool/exec \
-  -H "Content-Type: application/json" \
-  -d '{"command": "echo Hello World"}'
+  -d '{"message": "你好", "userId": "my-user"}'
 ```
 
-## 功能特性
+### 获取可用工具
+```bash
+curl http://localhost:3000/tools
+```
 
-- **智能对话** - 支持自然语言交互
-- **文件操作** - 读取、写入、编辑文件
-- **命令执行** - 安全地执行系统命令
-- **网络搜索** - 搜索和获取网络信息
-- **记忆管理** - 维护对话上下文
-- **工具链** - 智能选择和使用适当工具
-- **对话历史** - 保持用户对话状态
-- **可扩展性** - 易于添加新功能和工具
+### 执行特定工具
+```bash
+curl -X POST http://localhost:3000/tool/exec \
+  -H "Content-Type: application/json" \
+  -d '{"command": "ls -la"}'
+```
 
-## 配置选项
-
-在 `.env` 文件中可以配置以下选项：
-
-- `NODE_ENV` - 运行环境 (development/production)
-- `PORT` - 服务器端口 (默认: 3000)
-- `LOG_LEVEL` - 日志级别 (debug/info/warn/error)
-- `OPENAI_API_KEY` - OpenAI API密钥
-- `MODEL_NAME` - 使用的AI模型 (默认: gpt-3.5-turbo)
-- `TEMPERATURE` - AI响应随机性 (默认: 0.7)
-- `MAX_TOKENS` - 最大响应长度 (默认: 1000)
-
-## 架构说明
+## 🏗️ 架构说明
 
 OpenBot采用模块化架构：
 
-- `src/index.js` - 主服务器入口
-- `src/utils/chatProcessor.js` - 基础聊天处理
-- `src/utils/enhancedChatProcessor.js` - 增强聊天处理，支持工具使用
-- `src/utils/toolManager.js` - 工具管理器
-- `src/config/config.js` - 配置管理
-- `docs/` - 文档
+```
+src/
+├── index.js              # 主服务器入口
+├── config/
+│   └── config.js         # 配置管理
+├── utils/
+│   ├── enhancedChatProcessor.js  # 增强聊天处理
+│   ├── toolManager.js    # 工具管理器
+│   ├── monitoringService.js  # 监控服务
+│   └── taskScheduler.js  # 任务调度器
+└── integrations/
+    ├── channelsManager.js # 渠道管理器
+    ├── feishuIntegration.js    # 飞书集成
+    ├── wechatWorkIntegration.js # 企业微信集成
+    └── dingtalkIntegration.js  # 钉钉集成
+```
 
-## 贡献指南
+## 🤝 贡献
 
-欢迎提交Issue和Pull Request来帮助改进OpenBot。
+欢迎提交 Issue 和 Pull Request 来帮助改进 OpenBot！
 
-## 许可证
+## 📄 许可证
 
 MIT License
+
+---
+
+<div align="center">
+  <p>由 OpenBot 团队 ❤️ 开发</p>
+  <p><em>让AI助手更智能、更易用</em></p>
+</div>
