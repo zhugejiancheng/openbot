@@ -8,6 +8,8 @@ const express = require('express');
 const cors = require('cors'); // Add CORS support
 const EnhancedChatProcessor = require('./utils/enhancedChatProcessor');
 const ChannelsManager = require('./integrations/channelsManager');
+const MonitoringService = require('./utils/monitoringService');
+const TaskScheduler = require('./utils/taskScheduler');
 
 // Initialize Express app
 const app = express();
@@ -287,6 +289,261 @@ app.post('/channels/:channelName/callback', async (req, res) => {
   }
 });
 
+// 初始化监控服务和任务调度器
+const monitoringService = new MonitoringService();
+const taskScheduler = new TaskScheduler();
+
+// 监控服务相关API端点
+
+// 添加监控器
+app.post('/monitor/add', async (req, res) => {
+  const { name, checkFunction, intervalMs, options } = req.body;
+  
+  if (!name || !checkFunction) {
+    return res.status(400).json({
+      error: 'name and checkFunction are required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    // 在实际应用中，checkFunction应该是预定义的函数
+    // 这里我们只接受预定义的监控类型
+    const predefinedChecks = {
+      'disk-space': async () => {
+        // 模拟磁盘空间检查
+        return { value: Math.random() * 100, type: 'info', priority: 'low' };
+      },
+      'cpu-usage': async () => {
+        // 模拟CPU使用率检查
+        return { value: Math.random() * 100, type: 'info', priority: 'low' };
+      },
+      'memory-usage': async () => {
+        // 模拟内存使用率检查
+        return { value: Math.random() * 100, type: 'info', priority: 'low' };
+      }
+    };
+    
+    if (predefinedChecks[name]) {
+      monitoringService.addMonitor(name, predefinedChecks[name], intervalMs, options);
+      res.json({
+        success: true,
+        message: `Monitor '${name}' added successfully`,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        error: `Predefined check '${name}' not available`,
+        available: Object.keys(predefinedChecks),
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Error adding monitor:', error);
+    res.status(500).json({
+      error: 'Failed to add monitor',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取监控状态
+app.get('/monitor/status', (req, res) => {
+  res.json({
+    status: monitoringService.getStatus(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 获取警报
+app.get('/monitor/alerts', (req, res) => {
+  const { priority, limit = 50 } = req.query;
+  res.json({
+    alerts: monitoringService.getAlerts(priority, parseInt(limit)),
+    count: monitoringService.getAlerts(priority, parseInt(limit)).length,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 清空警报
+app.post('/monitor/alerts/clear', (req, res) => {
+  monitoringService.clearAlerts();
+  res.json({
+    success: true,
+    message: 'Alerts cleared',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 任务调度相关API端点
+
+// 添加一次性任务
+app.post('/tasks/add', (req, res) => {
+  const { taskId, taskFunction, options } = req.body;
+  
+  if (!taskId || !taskFunction) {
+    return res.status(400).json({
+      error: 'taskId and taskFunction are required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    // 在实际应用中，taskFunction应该是预定义的任务
+    // 这里我们只接受预定义的任务类型
+    const predefinedTasks = {
+      'send-message': async () => {
+        // 模拟发送消息任务
+        return { success: true, message: 'Message sent' };
+      },
+      'backup-data': async () => {
+        // 模拟备份数据任务
+        return { success: true, message: 'Data backed up' };
+      },
+      'clean-cache': async () => {
+        // 模拟清理缓存任务
+        return { success: true, message: 'Cache cleaned' };
+      }
+    };
+    
+    if (predefinedTasks[taskFunction]) {
+      taskScheduler.addTask(taskId, predefinedTasks[taskFunction], options);
+      res.json({
+        success: true,
+        message: `Task '${taskId}' added successfully`,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        error: `Predefined task '${taskFunction}' not available`,
+        available: Object.keys(predefinedTasks),
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(500).json({
+      error: 'Failed to add task',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 执行任务
+app.post('/tasks/execute/:taskId', async (req, res) => {
+  const taskId = req.params.taskId;
+  
+  try {
+    const result = await taskScheduler.executeTask(taskId);
+    res.json({
+      success: true,
+      taskId: taskId,
+      result: result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error(`Error executing task ${taskId}:`, error);
+    res.status(500).json({
+      error: `Failed to execute task ${taskId}`,
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 计划任务
+app.post('/tasks/schedule', (req, res) => {
+  const { taskId, taskFunction, schedule, options } = req.body;
+  
+  if (!taskId || !taskFunction || !schedule) {
+    return res.status(400).json({
+      error: 'taskId, taskFunction, and schedule are required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    // 使用预定义的任务
+    const predefinedTasks = {
+      'send-daily-report': async () => {
+        return { success: true, message: 'Daily report sent' };
+      },
+      'check-system-status': async () => {
+        return { success: true, message: 'System status checked' };
+      },
+      'update-data': async () => {
+        return { success: true, message: 'Data updated' };
+      }
+    };
+    
+    if (predefinedTasks[taskFunction]) {
+      taskScheduler.scheduleTask(taskId, predefinedTasks[taskFunction], schedule, options);
+      res.json({
+        success: true,
+        message: `Scheduled task '${taskId}' added successfully`,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(400).json({
+        error: `Predefined task '${taskFunction}' not available`,
+        available: Object.keys(predefinedTasks),
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Error scheduling task:', error);
+    res.status(500).json({
+      error: 'Failed to schedule task',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取任务状态
+app.get('/tasks/status/:taskId?', (req, res) => {
+  const taskId = req.params.taskId;
+  
+  if (taskId) {
+    const status = taskScheduler.getStatus(taskId);
+    if (status) {
+      res.json({
+        taskId: taskId,
+        status: status,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(404).json({
+        error: `Task '${taskId}' not found`,
+        timestamp: new Date().toISOString()
+      });
+    }
+  } else {
+    res.json({
+      status: taskScheduler.getAllStatus(),
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取任务历史
+app.get('/tasks/history', (req, res) => {
+  const { limit = 50, status, type, taskId } = req.query;
+  const filter = {};
+  
+  if (status) filter.status = status;
+  if (type) filter.type = type;
+  if (taskId) filter.taskId = taskId;
+  
+  res.json({
+    history: taskScheduler.getHistory(parseInt(limit), filter),
+    count: taskScheduler.getHistory(parseInt(limit), filter).length,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`OpenBot server is running on port ${PORT}`);
@@ -304,9 +561,25 @@ app.listen(PORT, () => {
   console.log(`  POST /channels/:channel/send-rich - Send rich message to channel`);
   console.log(`  GET  /channels/:channel/user/:userId - Get user info`);
   console.log(`  POST /channels/:channel/callback - Channel event callback`);
+  console.log(`  POST /monitor/add - Add monitor`);
+  console.log(`  GET  /monitor/status - Monitor status`);
+  console.log(`  GET  /monitor/alerts - Get alerts`);
+  console.log(`  POST /monitor/alerts/clear - Clear alerts`);
+  console.log(`  POST /tasks/add - Add task`);
+  console.log(`  POST /tasks/execute/:taskId - Execute task`);
+  console.log(`  POST /tasks/schedule - Schedule task`);
+  console.log(`  GET  /tasks/status/:taskId - Task status`);
+  console.log(`  GET  /tasks/history - Task history`);
   console.log(`\nAI Configured: ${chatProcessor.isAIConfigured() ? 'Yes' : 'No'}`);
   console.log(`Available Tools: ${chatProcessor.getAvailableTools().length}`);
   console.log(`Available Channels: ${channelsManager.getAvailableChannels().length}`);
+  console.log(`Monitoring Service: Initialized`);
+  console.log(`Task Scheduler: Initialized`);
 });
+
+// 启动监控服务
+setTimeout(() => {
+  monitoringService.start().catch(console.error);
+}, 2000);
 
 module.exports = app;
