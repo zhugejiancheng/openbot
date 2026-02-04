@@ -131,6 +131,9 @@ npm run dev  # 需要先安装 nodemon: npm install -g nodemon
 - `GET /monitor/status` - 获取监控状态
 - `GET /monitor/metrics` - 获取系统指标
 
+### 系统健康检查接口
+- `GET /health/full` - 获取完整的系统健康状况报告
+
 ### 监控和任务接口
 - `POST /monitor/add` - 添加监控器
 - `GET /monitor/status` - 监控状态

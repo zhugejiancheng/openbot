@@ -13,6 +13,7 @@ const TaskScheduler = require('./utils/taskScheduler');
 const ConfigApi = require('./api/configApi');
 const FileApi = require('./api/fileApi');
 const MonitoringApi = require('./api/monitoringApi');
+const HealthCheckApi = require('./api/healthCheckApi');
 
 // Initialize Express app
 const app = express();
@@ -1074,6 +1075,33 @@ app.get('/monitor/metrics', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to get system metrics',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 初始化健康检查API
+const healthCheckApi = new HealthCheckApi(chatProcessor, toolManager, monitoringService);
+
+// 系统健康检查
+app.get('/health/full', async (req, res) => {
+  try {
+    const result = await healthCheckApi.performHealthCheck();
+    
+    res.json({
+      success: result.success,
+      healthScore: result.healthScore,
+      status: result.status,
+      timestamp: result.timestamp,
+      checks: result.checks,
+      message: `Overall system health: ${result.status} (${result.healthScore}%)`
+    });
+  } catch (error) {
+    console.error('Error performing health check:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to perform health check',
       message: error.message,
       timestamp: new Date().toISOString()
     });
