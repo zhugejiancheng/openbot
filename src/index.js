@@ -11,6 +11,7 @@ const ChannelsManager = require('./integrations/channelsManager');
 const MonitoringService = require('./utils/monitoringService');
 const TaskScheduler = require('./utils/taskScheduler');
 const ConfigApi = require('./api/configApi');
+const FileApi = require('./api/fileApi');
 
 // Initialize Express app
 const app = express();
@@ -669,11 +670,263 @@ app.listen(PORT, () => {
   console.log(`  GET  /config/current - Get current configuration`);
   console.log(`  GET  /config/validate-system - Validate system requirements`);
   console.log(`  POST /config/test - Test configuration`);
+  console.log(`  GET  /files/list - List files in directory`);
+  console.log(`  GET  /files/read - Read a file`);
+  console.log(`  POST /files/write - Write to a file`);
+  console.log(`  POST /files/delete - Delete a file`);
+  console.log(`  POST /files/mkdir - Create a directory`);
+  console.log(`  GET  /files/info - Get file info`);
+  console.log(`  GET  /files/search - Search for files`);
+  console.log(`  GET  /files/disk-usage - Get disk usage`);
   console.log(`\nAI Configured: ${chatProcessor.isAIConfigured() ? 'Yes' : 'No'}`);
   console.log(`Available Tools: ${chatProcessor.getAvailableTools().length}`);
   console.log(`Available Channels: ${channelsManager.getAvailableChannels().length}`);
   console.log(`Monitoring Service: Initialized`);
   console.log(`Task Scheduler: Initialized`);
+});
+
+// 初始化文件API
+const fileApi = new FileApi();
+
+// 列出文件
+app.get('/files/list', async (req, res) => {
+  const { dirPath = '.' } = req.query;
+  
+  try {
+    const result = await fileApi.listFiles(dirPath);
+    
+    res.json({
+      success: result.success,
+      directory: result.directory,
+      items: result.items,
+      count: result.count,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error listing files:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to list files',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 读取文件
+app.get('/files/read', async (req, res) => {
+  const { path: filePath } = req.query;
+  
+  if (!filePath) {
+    return res.status(400).json({
+      success: false,
+      error: 'File path is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.readFile(filePath);
+    
+    res.json({
+      success: result.success,
+      path: result.path,
+      content: result.content,
+      size: result.size,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error reading file:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to read file',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 写入文件
+app.post('/files/write', async (req, res) => {
+  const { path: filePath, content } = req.body;
+  
+  if (!filePath || content === undefined) {
+    return res.status(400).json({
+      success: false,
+      error: 'File path and content are required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.writeFile(filePath, content);
+    
+    res.json({
+      success: result.success,
+      path: result.path,
+      message: result.message,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error writing file:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to write file',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 删除文件
+app.post('/files/delete', async (req, res) => {
+  const { path: filePath } = req.body;
+  
+  if (!filePath) {
+    return res.status(400).json({
+      success: false,
+      error: 'File path is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.deleteFile(filePath);
+    
+    res.json({
+      success: result.success,
+      path: result.path,
+      message: result.message,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete file',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 创建目录
+app.post('/files/mkdir', async (req, res) => {
+  const { path: dirPath } = req.body;
+  
+  if (!dirPath) {
+    return res.status(400).json({
+      success: false,
+      error: 'Directory path is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.createDirectory(dirPath);
+    
+    res.json({
+      success: result.success,
+      path: result.path,
+      message: result.message,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error creating directory:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create directory',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取文件信息
+app.get('/files/info', async (req, res) => {
+  const { path: filePath } = req.query;
+  
+  if (!filePath) {
+    return res.status(400).json({
+      success: false,
+      error: 'File path is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.getInfo(filePath);
+    
+    res.json({
+      success: result.success,
+      path: result.path,
+      info: result.info,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting file info:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get file info',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 搜索文件
+app.get('/files/search', async (req, res) => {
+  const { pattern, searchPath = '.', maxDepth = 3 } = req.query;
+  
+  if (!pattern) {
+    return res.status(400).json({
+      success: false,
+      error: 'Search pattern is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  try {
+    const result = await fileApi.searchFiles(pattern, searchPath, parseInt(maxDepth));
+    
+    res.json({
+      success: result.success,
+      pattern: result.pattern,
+      results: result.results,
+      count: result.count,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error searching files:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to search files',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取磁盘使用情况
+app.get('/files/disk-usage', async (req, res) => {
+  try {
+    const result = await fileApi.getDiskUsage();
+    
+    res.json({
+      success: result.success,
+      diskUsage: result.diskUsage,
+      currentDirectory: result.currentDirectory,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting disk usage:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get disk usage',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // 启动监控服务
