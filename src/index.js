@@ -12,6 +12,7 @@ const MonitoringService = require('./utils/monitoringService');
 const TaskScheduler = require('./utils/taskScheduler');
 const ConfigApi = require('./api/configApi');
 const FileApi = require('./api/fileApi');
+const MonitoringApi = require('./api/monitoringApi');
 
 // Initialize Express app
 const app = express();
@@ -923,6 +924,156 @@ app.get('/files/disk-usage', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to get disk usage',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 初始化监控API
+const monitoringApi = new MonitoringApi(monitoringService);
+
+// 获取系统信息
+app.get('/monitor/system-info', async (req, res) => {
+  try {
+    const result = await monitoringApi.getSystemInfo();
+    
+    res.json({
+      success: result.success,
+      system: result.system,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting system info:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get system info',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取进程信息
+app.get('/monitor/process-info', async (req, res) => {
+  try {
+    const result = await monitoringApi.getProcessInfo();
+    
+    res.json({
+      success: result.success,
+      process: result.process,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting process info:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get process info',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取CPU使用情况
+app.get('/monitor/cpu-usage', async (req, res) => {
+  try {
+    const result = await monitoringApi.getCpuUsage();
+    
+    res.json({
+      success: result.success,
+      cpu: result.cpu,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting CPU usage:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get CPU usage',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取内存使用情况
+app.get('/monitor/memory-usage', async (req, res) => {
+  try {
+    const result = await monitoringApi.getMemoryUsage();
+    
+    res.json({
+      success: result.success,
+      memory: result.memory,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting memory usage:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get memory usage',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取网络接口信息
+app.get('/monitor/network-interfaces', async (req, res) => {
+  try {
+    const result = await monitoringApi.getNetworkInterfaces();
+    
+    res.json({
+      success: result.success,
+      interfaces: result.interfaces,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting network interfaces:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get network interfaces',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取监控状态
+app.get('/monitor/status', async (req, res) => {
+  try {
+    const result = await monitoringApi.getMonitoringStatus();
+    
+    res.json({
+      success: result.success,
+      monitoring: result.monitoring,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting monitoring status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get monitoring status',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取系统指标
+app.get('/monitor/metrics', async (req, res) => {
+  try {
+    const result = await monitoringApi.getSystemMetrics();
+    
+    res.json({
+      success: result.success,
+      metrics: result.metrics,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting system metrics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get system metrics',
       message: error.message,
       timestamp: new Date().toISOString()
     });

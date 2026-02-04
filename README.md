@@ -112,6 +112,25 @@ npm run dev  # 需要先安装 nodemon: npm install -g nodemon
 - `GET /channels/:channelName/user/:userId` - 获取用户信息
 - `POST /channels/:channelName/callback` - 处理渠道事件
 
+### 文件操作接口
+- `GET /files/list` - 列出指定目录中的文件
+- `GET /files/read` - 读取文件内容
+- `POST /files/write` - 写入文件内容
+- `POST /files/delete` - 删除文件
+- `POST /files/mkdir` - 创建目录
+- `GET /files/info` - 获取文件信息
+- `GET /files/search` - 搜索文件
+- `GET /files/disk-usage` - 获取磁盘使用情况
+
+### 系统监控接口
+- `GET /monitor/system-info` - 获取系统信息
+- `GET /monitor/process-info` - 获取进程信息
+- `GET /monitor/cpu-usage` - 获取CPU使用情况
+- `GET /monitor/memory-usage` - 获取内存使用情况
+- `GET /monitor/network-interfaces` - 获取网络接口信息
+- `GET /monitor/status` - 获取监控状态
+- `GET /monitor/metrics` - 获取系统指标
+
 ### 监控和任务接口
 - `POST /monitor/add` - 添加监控器
 - `GET /monitor/status` - 监控状态
