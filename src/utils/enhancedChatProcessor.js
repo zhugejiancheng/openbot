@@ -209,7 +209,8 @@ class EnhancedChatProcessor {
    */
   async generateResponseWithTools(history) {
     if (!this.openai) {
-      return "I processed your request using a tool and got results. However, I'm currently running in demo mode without an AI API key to generate a polished response. To enable full AI capabilities, please configure your AI API key in the environment variables.";
+      // Return a helpful response when AI is not configured
+      return this.generateBasicResponse(history);
     }
 
     try {
@@ -236,7 +237,8 @@ class EnhancedChatProcessor {
       return response.choices[0].message.content;
     } catch (error) {
       console.error('Error generating response with tools:', error);
-      return `I processed your request and used tools to get information, but encountered an error generating the final response: ${error.message}`;
+      // Return basic response when API fails
+      return this.generateBasicResponse(history);
     }
   }
 
@@ -245,8 +247,8 @@ class EnhancedChatProcessor {
    */
   async generateResponseWithoutTools(message, history) {
     if (!this.openai) {
-      // Fallback response if no API key is configured
-      return `I received your message: "${message}". This is OpenBot responding. Currently running in demo mode without an AI API key. To enable full AI capabilities, please configure your AI API key in the environment variables. I can help with various tasks including file operations, command execution, web searches, and more when properly configured.`;
+      // Return basic response when AI is not configured
+      return this.generateBasicResponse([{ role: 'user', content: message }]);
     }
 
     try {
@@ -273,7 +275,32 @@ class EnhancedChatProcessor {
       return response.choices[0].message.content;
     } catch (error) {
       console.error('Error generating response without tools:', error);
-      return `I received your message but encountered an error generating a response: ${error.message}`;
+      // Return basic response when API fails
+      return this.generateBasicResponse([{ role: 'user', content: message }]);
+    }
+  }
+
+  /**
+   * Generate basic response when AI is not available
+   */
+  generateBasicResponse(history) {
+    // Find the most recent user message
+    const lastUserMessageObj = history
+      .slice()
+      .reverse()
+      .find(msg => msg.role === 'user');
+    
+    const lastUserMessage = lastUserMessageObj ? lastUserMessageObj.content : 'Hello';
+    
+    // Create a helpful response based on the message
+    if (lastUserMessage.toLowerCase().includes('hello') || 
+        lastUserMessage.toLowerCase().includes('hi') || 
+        lastUserMessage.toLowerCase().includes('hey')) {
+      return `Hello! I'm OpenBot, an AI assistant. I'm currently running in demo mode without a configured AI API key. You can interact with me using various tools through the API. For example, you can read/write files, execute commands, and more. What would you like to do?`;
+    } else if (lastUserMessage.toLowerCase().includes('help')) {
+      return `I'm OpenBot, an AI assistant. Even without an AI API key configured, I can help with many tasks through my tools. You can: 1) Read/write files using the /tool/read and /tool/write endpoints, 2) Execute system commands using /tool/exec, 3) Search the web using /tool/web_search, 4) Manage memory using /tool/memory_search. How can I assist you today?`;
+    } else {
+      return `I received your message: "${lastUserMessage}". I'm OpenBot, an AI assistant running in demo mode. You can use my various tools through the API to accomplish different tasks. For example, you can read/write files, execute commands, or search the web. What would you like to do?`;
     }
   }
 
