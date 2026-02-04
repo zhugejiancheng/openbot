@@ -10,6 +10,7 @@ const EnhancedChatProcessor = require('./utils/enhancedChatProcessor');
 const ChannelsManager = require('./integrations/channelsManager');
 const MonitoringService = require('./utils/monitoringService');
 const TaskScheduler = require('./utils/taskScheduler');
+const ConfigApi = require('./api/configApi');
 
 // Initialize Express app
 const app = express();
@@ -544,6 +545,100 @@ app.get('/tasks/history', (req, res) => {
   });
 });
 
+// 配置API相关端点
+
+// 初始化配置API
+const configApi = new ConfigApi();
+
+// 保存配置
+app.post('/config/save', async (req, res) => {
+  const configData = req.body;
+  
+  try {
+    const result = await configApi.saveConfig(configData);
+    
+    res.json({
+      success: result.success,
+      message: result.message,
+      path: result.path,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error saving config:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save configuration',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取当前配置
+app.get('/config/current', async (req, res) => {
+  try {
+    const result = await configApi.getCurrentConfig();
+    
+    res.json({
+      success: result.success,
+      exists: result.exists,
+      content: result.content,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error getting config:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get configuration',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 验证系统要求
+app.get('/config/validate-system', async (req, res) => {
+  try {
+    const result = await configApi.validateSystem();
+    
+    res.json({
+      success: result.success,
+      system: result.system,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error validating system:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to validate system',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 测试配置
+app.post('/config/test', async (req, res) => {
+  try {
+    const result = await configApi.testConfig();
+    
+    res.json({
+      success: result.success,
+      message: result.message,
+      port: result.port,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error testing config:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to test configuration',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`OpenBot server is running on port ${PORT}`);
@@ -570,6 +665,10 @@ app.listen(PORT, () => {
   console.log(`  POST /tasks/schedule - Schedule task`);
   console.log(`  GET  /tasks/status/:taskId - Task status`);
   console.log(`  GET  /tasks/history - Task history`);
+  console.log(`  POST /config/save - Save configuration`);
+  console.log(`  GET  /config/current - Get current configuration`);
+  console.log(`  GET  /config/validate-system - Validate system requirements`);
+  console.log(`  POST /config/test - Test configuration`);
   console.log(`\nAI Configured: ${chatProcessor.isAIConfigured() ? 'Yes' : 'No'}`);
   console.log(`Available Tools: ${chatProcessor.getAvailableTools().length}`);
   console.log(`Available Channels: ${channelsManager.getAvailableChannels().length}`);

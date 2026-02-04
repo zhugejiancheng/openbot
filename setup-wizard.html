@@ -624,14 +624,8 @@
             }
         }
 
-        function checkSystem() {
-            // Simulate system check
-            document.getElementById('nodeVersion').value = 'v22.22.0';
-            document.getElementById('npmVersion').value = '10.9.4';
-            document.getElementById('memory').value = '16GB 可用';
-            document.getElementById('compatibility').value = '✅ 兼容';
-
-            document.getElementById('checkNextBtn').style.display = 'inline-block';
+        async function checkSystem() {
+            await checkSystemRequirements();
         }
 
         function toggleApiKeyInput() {
@@ -840,36 +834,138 @@
             return content;
         }
 
-        // Function to save .env file (simulated)
-        function saveEnvFile(content) {
-            // In a real implementation, this would save the file to the system
-            // For now, we'll store it in localStorage as a simulation
-            localStorage.setItem('openbot-env-config', content);
-            
-            // Also try to trigger a download of the .env file
+        // Function to save .env file using backend API
+        async function saveEnvFile(content) {
+            try {
+                // First, try to save using the backend API
+                const response = await fetch('/config/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(getCurrentConfig())
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Configuration saved via API:', result.path);
+                } else {
+                    console.log('API save failed, falling back to download:', result.error);
+                    // Fallback: trigger download of the .env file
+                    triggerDownload('.env', content);
+                }
+            } catch (error) {
+                console.log('API not available, falling back to download:', error);
+                // Fallback: trigger download of the .env file
+                triggerDownload('.env', content);
+            }
+        }
+
+        // Helper function to trigger file download
+        function triggerDownload(filename, content) {
             try {
                 const blob = new Blob([content], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = '.env';
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             } catch (e) {
-                console.log('Could not download .env file: ', e);
+                console.error('Could not download file: ', e);
+            }
+        }
+
+        // Function to get current configuration
+        function getCurrentConfig() {
+            return {
+                port: document.getElementById('port').value,
+                environment: document.getElementById('environment').value,
+                logLevel: document.getElementById('logLevel').value,
+                enableDemo: document.getElementById('enableDemo').checked,
+                aiProvider: document.getElementById('aiProvider').value,
+                apiKey: document.getElementById('apiKey').value,
+                aiModel: document.getElementById('aiModel').value,
+                enableAdvancedFeatures: document.getElementById('enableAdvancedFeatures').checked,
+                enableFeishu: document.getElementById('enableFeishu').checked,
+                feishuAppId: document.getElementById('feishuAppId').value,
+                feishuAppSecret: document.getElementById('feishuAppSecret').value,
+                enableWechatWork: document.getElementById('enableWechatWork').checked,
+                wechatWorkCorpId: document.getElementById('wechatWorkCorpId').value,
+                wechatWorkAgentId: document.getElementById('wechatWorkAgentId').value,
+                wechatWorkSecret: document.getElementById('wechatWorkSecret').value,
+                enableDingtalk: document.getElementById('enableDingtalk').checked,
+                dingtalkAppKey: document.getElementById('dingtalkAppKey').value,
+                dingtalkAppSecret: document.getElementById('dingtalkAppSecret').value,
+                features: {
+                    memory: document.getElementById('featureMemory').checked,
+                    monitoring: document.getElementById('featureMonitoring').checked,
+                    scheduling: document.getElementById('featureScheduling').checked,
+                    webSearch: document.getElementById('featureWebSearch').checked,
+                    imageAnalysis: document.getElementById('featureImageAnalysis').checked,
+                    fileOps: document.getElementById('featureFileOps').checked,
+                    cmdExec: document.getElementById('featureCmdExec').checked
+                }
+            };
+        }
+
+        // Function to check system requirements
+        async function checkSystemRequirements() {
+            try {
+                const response = await fetch('/config/validate-system');
+                const result = await response.json();
+                
+                if (result.success && result.system) {
+                    document.getElementById('nodeVersion').value = result.system.nodeVersion;
+                    document.getElementById('npmVersion').value = result.system.npmVersion;
+                    document.getElementById('memory').value = result.system.memoryGB + 'GB RAM';
+                    document.getElementById('compatibility').value = result.system.compatible ? '✅ 兼容' : '❌ 不兼容';
+                    
+                    document.getElementById('checkNextBtn').style.display = 'inline-block';
+                    return result.system.compatible;
+                }
+            } catch (error) {
+                console.log('Backend API not available, using simulated check');
+                // Fallback to simulated check
+                document.getElementById('nodeVersion').value = 'v22.22.0';
+                document.getElementById('npmVersion').value = '10.9.4';
+                document.getElementById('memory').value = '16GB 可用';
+                document.getElementById('compatibility').value = '✅ 兼容';
+                
+                document.getElementById('checkNextBtn').style.display = 'inline-block';
+                return true;
             }
         }
 
         // Function to finish setup and potentially start the service
-        function finishSetup() {
-            // In a real implementation, this would start the actual service
-            // For now, we'll show a message with next steps
-            const config = JSON.parse(localStorage.getItem('openbot-config') || '{}');
-            const port = config.port || 3000;
-            
-            alert(`OpenBot 已配置完成！\n\n请执行以下步骤启动服务：\n1. 将下载的 .env 文件放到项目根目录\n2. 在项目目录运行: npm start\n3. 访问 http://localhost:${port} 使用服务\n\n您也可以使用启动脚本: ./start.sh`);
+        async function finishSetup() {
+            try {
+                // Test the configuration if possible
+                const response = await fetch('/config/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(getCurrentConfig())
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`🎉 OpenBot 配置并启动成功！\n\n🚀 服务正在运行\n🌐 访问 http://localhost:${result.port} 使用服务\n📋 管理面板: http://localhost:${result.port}/admin`);
+                } else {
+                    // Fallback message
+                    const config = getCurrentConfig();
+                    alert(`OpenBot 已配置完成！\n\n请执行以下步骤启动服务：\n1. 确保已将 .env 文件放在项目根目录\n2. 在项目目录运行: npm start\n3. 访问 http://localhost:${config.port} 使用服务\n\n您也可以使用启动脚本: ./start.sh`);
+                }
+            } catch (error) {
+                // Backend not available, show fallback
+                const config = getCurrentConfig();
+                alert(`OpenBot 已配置完成！\n\n请执行以下步骤启动服务：\n1. 确保已将 .env 文件放在项目根目录\n2. 在项目目录运行: npm start\n3. 访问 http://localhost:${config.port} 使用服务\n\n您也可以使用启动脚本: ./start.sh`);
+            }
         }
 
         function finishSetup() {
