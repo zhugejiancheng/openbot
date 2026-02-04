@@ -462,6 +462,116 @@ class ToolManager {
   }
 
   /**
+   * Normalize parameters for different tools
+   */
+  normalizeParams(toolName, params) {
+    // 创建参数副本以避免修改原始对象
+    const normalized = { ...params };
+
+    switch (toolName) {
+      case 'read':
+        // 支持 'path' 和 'filePath' 两种参数名
+        if (params.path && !params.filePath) {
+          normalized.filePath = params.path;
+        }
+        break;
+      case 'write':
+        // 支持 'path' 和 'filePath' 两种参数名
+        if (params.path && !params.filePath) {
+          normalized.filePath = params.path;
+        }
+        break;
+      case 'edit':
+        // 支持 'path' 和 'filePath' 两种参数名
+        if (params.path && !params.filePath) {
+          normalized.filePath = params.path;
+        }
+        break;
+      case 'exec':
+        // 支持 'cmd' 和 'command' 两种参数名
+        if (params.cmd && !params.command) {
+          normalized.command = params.cmd;
+        }
+        break;
+      case 'web_search':
+        // 支持 'q' 和 'query' 两种参数名
+        if (params.q && !params.query) {
+          normalized.query = params.q;
+        }
+        break;
+      case 'web_fetch':
+        // 支持 'url' 和 'uri' 两种参数名
+        if (params.uri && !params.url) {
+          normalized.url = params.uri;
+        }
+        break;
+      case 'memory_search':
+        // 支持 'q' 和 'query' 两种参数名
+        if (params.q && !params.query) {
+          normalized.query = params.q;
+        }
+        break;
+      case 'memory_get':
+        // 支持 'path' 和 'file' 两种参数名
+        if (params.file && !params.path) {
+          normalized.path = params.file;
+        }
+        break;
+      case 'process':
+        // 支持 'id' 和 'sessionId' 两种参数名
+        if (params.id && !params.sessionId) {
+          normalized.sessionId = params.id;
+        }
+        break;
+      case 'session_status':
+        // 支持 'id' 和 'sessionKey' 两种参数名
+        if (params.id && !params.sessionKey) {
+          normalized.sessionKey = params.id;
+        }
+        break;
+      case 'sessions_history':
+        // 支持 'id' 和 'sessionKey' 两种参数名
+        if (params.id && !params.sessionKey) {
+          normalized.sessionKey = params.id;
+        }
+        break;
+      case 'sessions_send':
+        // 支持 'id' 和 'sessionKey' 两种参数名
+        if (params.id && !params.sessionKey) {
+          normalized.sessionKey = params.id;
+        }
+        break;
+      case 'feishu_doc':
+        // 支持 'token' 和 'doc_token' 两种参数名
+        if (params.token && !params.doc_token) {
+          normalized.doc_token = params.token;
+        }
+        break;
+      case 'feishu_wiki':
+        // 支持 'token' 和 'node_token' 两种参数名
+        if (params.token && !params.node_token) {
+          normalized.node_token = params.token;
+        }
+        break;
+      case 'feishu_drive':
+        // 支持 'token' 和 'file_token' 两种参数名
+        if (params.token && !params.file_token) {
+          normalized.file_token = params.token;
+        }
+        break;
+      case 'feishu_bitable_get_record':
+      case 'feishu_bitable_update_record':
+        // 支持 'id' 和 'record_id' 两种参数名
+        if (params.id && !params.record_id) {
+          normalized.record_id = params.id;
+        }
+        break;
+    }
+
+    return normalized;
+  }
+
+  /**
    * Execute a specific tool
    */
   async executeTool(toolName, params) {
@@ -473,7 +583,9 @@ class ToolManager {
     }
 
     try {
-      return await this.tools[toolName](params);
+      // 参数标准化 - 将常用的参数名标准化为工具函数期望的名称
+      const normalizedParams = this.normalizeParams(toolName, params);
+      return await this.tools[toolName](normalizedParams);
     } catch (error) {
       return {
         success: false,
