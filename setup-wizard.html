@@ -718,7 +718,41 @@
             // Switch to installation step
             showStep(7);
             
-            // Simulate installation process
+            // Get the actual configuration values
+            const config = {
+                port: document.getElementById('port').value,
+                environment: document.getElementById('environment').value,
+                logLevel: document.getElementById('logLevel').value,
+                enableDemo: document.getElementById('enableDemo').checked,
+                aiProvider: document.getElementById('aiProvider').value,
+                apiKey: document.getElementById('apiKey').value,
+                aiModel: document.getElementById('aiModel').value,
+                enableAdvancedFeatures: document.getElementById('enableAdvancedFeatures').checked,
+                enableFeishu: document.getElementById('enableFeishu').checked,
+                feishuAppId: document.getElementById('feishuAppId').value,
+                feishuAppSecret: document.getElementById('feishuAppSecret').value,
+                enableWechatWork: document.getElementById('enableWechatWork').checked,
+                wechatWorkCorpId: document.getElementById('wechatWorkCorpId').value,
+                wechatWorkAgentId: document.getElementById('wechatWorkAgentId').value,
+                wechatWorkSecret: document.getElementById('wechatWorkSecret').value,
+                enableDingtalk: document.getElementById('enableDingtalk').checked,
+                dingtalkAppKey: document.getElementById('dingtalkAppKey').value,
+                dingtalkAppSecret: document.getElementById('dingtalkAppSecret').value,
+                features: {
+                    memory: document.getElementById('featureMemory').checked,
+                    monitoring: document.getElementById('featureMonitoring').checked,
+                    scheduling: document.getElementById('featureScheduling').checked,
+                    webSearch: document.getElementById('featureWebSearch').checked,
+                    imageAnalysis: document.getElementById('featureImageAnalysis').checked,
+                    fileOps: document.getElementById('featureFileOps').checked,
+                    cmdExec: document.getElementById('featureCmdExec').checked
+                }
+            };
+
+            // Create .env file content
+            const envContent = createEnvFileContent(config);
+            
+            // Simulate installation process with actual file operations
             const output = document.getElementById('installOutput');
             output.textContent = '开始安装 OpenBot...\n';
             
@@ -731,10 +765,7 @@
                 '正在初始化数据库(如适用)...',
                 '正在配置安全设置...',
                 '正在启动服务...',
-                '✅ 安装完成!',
-                '🚀 OpenBot 服务已启动',
-                '🌐 访问 http://localhost:3000 使用服务',
-                '📋 管理面板: http://localhost:3000/admin'
+                '✅ 安装完成!'
             ];
             
             let i = 0;
@@ -742,15 +773,103 @@
                 if (i < steps.length) {
                     output.textContent += steps[i] + '\n';
                     output.scrollTop = output.scrollHeight;
+                    
+                    // After creating config file step, save the .env file
+                    if (steps[i].includes('创建配置文件')) {
+                        saveEnvFile(envContent);
+                    }
+                    
                     i++;
                 } else {
                     clearInterval(interval);
                     // Show completion message after a delay
                     setTimeout(() => {
                         document.getElementById('installComplete').classList.remove('hidden');
+                        output.textContent += '\n🚀 OpenBot 服务已启动\n';
+                        output.textContent += '🌐 访问 http://localhost:' + config.port + ' 使用服务\n';
+                        output.textContent += '📋 管理面板: http://localhost:' + config.port + '/admin\n';
                     }, 1000);
                 }
             }, 800);
+        }
+
+        // Function to create .env file content based on configuration
+        function createEnvFileContent(config) {
+            let content = '# OpenBot 配置文件\n';
+            content += '# 自动生成于 ' + new Date().toISOString() + '\n\n';
+            
+            // Server configuration
+            content += '# 服务器配置\n';
+            content += 'PORT=' + config.port + '\n';
+            content += 'NODE_ENV=' + config.environment + '\n';
+            content += 'LOG_LEVEL=' + config.logLevel + '\n\n';
+            
+            // AI configuration
+            content += '# AI配置\n';
+            if (config.aiProvider && config.apiKey) {
+                const apiKeyVar = config.aiProvider.toUpperCase() + '_API_KEY';
+                content += apiKeyVar + '=' + config.apiKey + '\n';
+                if (config.aiModel) {
+                    content += 'MODEL_NAME=' + config.aiModel + '\n';
+                }
+            } else {
+                content += '# 未配置AI服务，使用演示模式\n';
+            }
+            
+            content += '\n# 国产渠道配置\n';
+            
+            if (config.enableFeishu) {
+                content += '# 飞书配置\n';
+                content += 'FEISHU_APP_ID=' + config.feishuAppId + '\n';
+                content += 'FEISHU_APP_SECRET=' + config.feishuAppSecret + '\n\n';
+            }
+            
+            if (config.enableWechatWork) {
+                content += '# 企业微信配置\n';
+                content += 'WECHAT_WORK_CORP_ID=' + config.wechatWorkCorpId + '\n';
+                content += 'WECHAT_WORK_AGENT_ID=' + config.wechatWorkAgentId + '\n';
+                content += 'WECHAT_WORK_SECRET=' + config.wechatWorkSecret + '\n\n';
+            }
+            
+            if (config.enableDingtalk) {
+                content += '# 钉钉配置\n';
+                content += 'DINGTALK_APP_KEY=' + config.dingtalkAppKey + '\n';
+                content += 'DINGTALK_APP_SECRET=' + config.dingtalkAppSecret + '\n\n';
+            }
+            
+            return content;
+        }
+
+        // Function to save .env file (simulated)
+        function saveEnvFile(content) {
+            // In a real implementation, this would save the file to the system
+            // For now, we'll store it in localStorage as a simulation
+            localStorage.setItem('openbot-env-config', content);
+            
+            // Also try to trigger a download of the .env file
+            try {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '.env';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.log('Could not download .env file: ', e);
+            }
+        }
+
+        // Function to finish setup and potentially start the service
+        function finishSetup() {
+            // In a real implementation, this would start the actual service
+            // For now, we'll show a message with next steps
+            const config = JSON.parse(localStorage.getItem('openbot-config') || '{}');
+            const port = config.port || 3000;
+            
+            alert(`OpenBot 已配置完成！\n\n请执行以下步骤启动服务：\n1. 将下载的 .env 文件放到项目根目录\n2. 在项目目录运行: npm start\n3. 访问 http://localhost:${port} 使用服务\n\n您也可以使用启动脚本: ./start.sh`);
         }
 
         function finishSetup() {
