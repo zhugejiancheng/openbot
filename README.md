@@ -24,22 +24,33 @@
 - **Node.js** 14.x 或更高版本
 - **npm** (随Node.js一起安装)
 
-### 安装
+### 安装方式
 
+#### 方式一：图形化安装向导 (推荐)
+1. 克隆项目：
+   ```bash
+   git clone https://github.com/zhugejiancheng/openbot.git
+   cd openbot
+   ```
+
+2. 直接打开图形化安装向导：
+   ```bash
+   open setup-wizard.html  # macOS
+   # 或在浏览器中直接打开该文件
+   ```
+
+3. 按照界面提示点击几下鼠标完成配置
+
+#### 方式二：交互式命令行安装
 1. **克隆项目**
    ```bash
    git clone https://github.com/zhugejiancheng/openbot.git
    cd openbot
    ```
 
-2. **运行交互式安装向导** (推荐)
+2. **运行交互式安装向导**
    ```bash
    ./install.sh
-   ```
-   
-   或手动安装：
-   ```bash
-   npm install
    ```
 
 3. **配置环境** (可选但推荐)
@@ -47,6 +58,11 @@
    cp .env.example .env
    # 编辑 .env 文件，添加您的API密钥
    ```
+
+#### 方式三：手动安装
+```bash
+npm install
+```
 
 ### 启动服务
 

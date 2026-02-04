@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenBot 安装向导</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .steps-container {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .step {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .step.active {
+            background: #4facfe;
+            color: white;
+        }
+
+        .step:not(.active):hover {
+            background: #e9ecef;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-next {
+            float: right;
+        }
+
+        .btn-prev {
+            float: left;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover, .feature-card.selected {
+            border-color: #4facfe;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .installation-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+            white-space: pre-wrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 OpenBot 安装向导</h1>
+            <p>轻松配置您的AI助手，无需复杂命令行操作</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step active" onclick="showStep(0)">欢迎</div>
+            <div class="step" onclick="showStep(1)">系统检查</div>
+            <div class="step" onclick="showStep(2)">基础配置</div>
+            <div class="step" onclick="showStep(3)">AI配置</div>
+            <div class="step" onclick="showStep(4)">渠道配置</div>
+            <div class="step" onclick="showStep(5)">功能选择</div>
+            <div class="step" onclick="showStep(6)">确认安装</div>
+            <div class="step" onclick="showStep(7)">安装完成</div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="content">
+            <!-- Step 1: Welcome -->
+            <div class="step-content active" id="step0">
+                <h2>欢迎使用 OpenBot 🎉</h2>
+                <p>OpenBot 是一个功能丰富的开源AI助手，具备自然语言处理、工具使用、任务自动化等多种能力。</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="toggleFeature('chat')">
+                        <div class="feature-icon">💬</div>
+                        <div class="feature-title">智能对话</div>
+                        <div class="feature-desc">自然语言交互</div>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('tools')">
+                        <div class="feature-icon">🔧</div>
+                        <div class="feature-title">工具使用</div>
+                        <div class="feature-desc">文件/命令操作</div>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('channels')">
+                        <div class="feature-icon">🌐</div>
+                        <div class="feature-title">多渠道</div>
+                        <div class="feature-desc">飞书/企微/钉钉</div>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('schedule')">
+                        <div class="feature-icon">⏰</div>
+                        <div class="feature-title">任务调度</div>
+                        <div class="feature-desc">自动化任务</div>
+                    </div>
+                </div>
+
+                <p>点击下方按钮开始配置您的 OpenBot！</p>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-primary btn-next" onclick="nextStep()">开始配置 →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: System Check -->
+            <div class="step-content" id="step1">
+                <h2>系统环境检查 🔍</h2>
+                <p>让我们检查您的系统是否满足 OpenBot 的运行要求：</p>
+                
+                <div class="form-group">
+                    <label>Node.js 版本:</label>
+                    <input type="text" id="nodeVersion" placeholder="正在检查..." readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>NPM 版本:</label>
+                    <input type="text" id="npmVersion" placeholder="正在检查..." readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>可用内存:</label>
+                    <input type="text" id="memory" placeholder="正在检查..." readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>系统兼容性:</label>
+                    <input type="text" id="compatibility" placeholder="正在检查..." readonly>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="checkSystem()">检查环境</button>
+                    <button class="btn btn-primary btn-next" onclick="nextStep()" id="checkNextBtn" style="display: none;">下一步 →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Basic Configuration -->
+            <div class="step-content" id="step2">
+                <h2>基础配置 ⚙️</h2>
+                <p>配置 OpenBot 的基本运行参数：</p>
+                
+                <div class="form-group">
+                    <label>服务端口:</label>
+                    <input type="number" id="port" value="3000" min="1024" max="65535">
+                </div>
+                
+                <div class="form-group">
+                    <label>运行环境:</label>
+                    <select id="environment">
+                        <option value="development">开发模式</option>
+                        <option value="production">生产模式</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>日志级别:</label>
+                    <select id="logLevel">
+                        <option value="info">信息 (推荐)</option>
+                        <option value="debug">调试</option>
+                        <option value="warn">警告</option>
+                        <option value="error">错误</option>
+                    </select>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableDemo" checked>
+                    <label for="enableDemo">启用演示模式 (无需API密钥即可体验)</label>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="nextStep()">下一步 →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: AI Configuration -->
+            <div class="step-content" id="step3">
+                <h2>AI 配置 🧠</h2>
+                <p>配置 AI 服务 (可选，跳过可使用演示模式)：</p>
+                
+                <div class="form-group">
+                    <label>AI 服务提供商:</label>
+                    <select id="aiProvider" onchange="toggleApiKeyInput()">
+                        <option value="">选择服务商</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                        <option value="ollama">Ollama (本地)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="apiKeyGroup" style="display: none;">
+                    <label>API 密钥:</label>
+                    <input type="password" id="apiKey" placeholder="输入您的API密钥">
+                    <small>提示：API密钥仅在本地存储，不会上传到任何服务器</small>
+                </div>
+                
+                <div class="form-group" id="modelGroup" style="display: none;">
+                    <label>模型选择:</label>
+                    <select id="aiModel">
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (OpenAI)</option>
+                        <option value="gpt-4">GPT-4 (OpenAI)</option>
+                        <option value="claude-3-haiku">Claude 3 Haiku (Anthropic)</option>
+                        <option value="claude-3-sonnet">Claude 3 Sonnet (Anthropic)</option>
+                    </select>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableAdvancedFeatures">
+                    <label for="enableAdvancedFeatures">启用高级功能 (需要有效API密钥)</label>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="nextStep()">下一步 →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Channel Configuration -->
+            <div class="step-content" id="step4">
+                <h2>渠道配置 📱</h2>
+                <p>配置国产渠道集成 (可选)：</p>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableFeishu" onchange="toggleChannelConfig('feishu')">
+                    <label for="enableFeishu">启用飞书集成</label>
+                </div>
+                
+                <div id="feishuConfig" style="display: none; margin-left: 20px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>飞书 App ID:</label>
+                        <input type="text" id="feishuAppId" placeholder="labc123def456...">
+                    </div>
+                    <div class="form-group">
+                        <label>飞书 App Secret:</label>
+                        <input type="password" id="feishuAppSecret" placeholder="输入App Secret">
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableWechatWork" onchange="toggleChannelConfig('wechatWork')">
+                    <label for="enableWechatWork">启用企业微信集成</label>
+                </div>
+                
+                <div id="wechatWorkConfig" style="display: none; margin-left: 20px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>企业微信 Corp ID:</label>
+                        <input type="text" id="wechatWorkCorpId" placeholder="wwabc123def456...">
+                    </div>
+                    <div class="form-group">
+                        <label>企业微信 Agent ID:</label>
+                        <input type="text" id="wechatWorkAgentId" placeholder="1000001">
+                    </div>
+                    <div class="form-group">
+                        <label>企业微信 Secret:</label>
+                        <input type="password" id="wechatWorkSecret" placeholder="输入Secret">
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="enableDingtalk" onchange="toggleChannelConfig('dingtalk')">
+                    <label for="enableDingtalk">启用钉钉集成</label>
+                </div>
+                
+                <div id="dingtalkConfig" style="display: none; margin-left: 20px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>钉钉 App Key:</label>
+                        <input type="text" id="dingtalkAppKey" placeholder="dingabc123def...">
+                    </div>
+                    <div class="form-group">
+                        <label>钉钉 App Secret:</label>
+                        <input type="password" id="dingtalkAppSecret" placeholder="输入App Secret">
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="nextStep()">下一步 →</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Feature Selection -->
+            <div class="step-content" id="step5">
+                <h2>功能选择 🚀</h2>
+                <p>选择您需要启用的功能模块：</p>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureMemory" checked>
+                    <label for="featureMemory">记忆管理 (对话历史、上下文理解)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureMonitoring" checked>
+                    <label for="featureMonitoring">监控服务 (系统状态、性能监控)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureScheduling" checked>
+                    <label for="featureScheduling">任务调度 (定时任务、自动化)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureWebSearch">
+                    <label for="featureWebSearch">网络搜索 (需要API密钥)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureImageAnalysis">
+                    <label for="featureImageAnalysis">图像分析 (需要API密钥)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureFileOps" checked>
+                    <label for="featureFileOps">文件操作 (读写编辑文件)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="featureCmdExec" checked>
+                    <label for="featureCmdExec">命令执行 (运行系统命令)</label>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="nextStep()">下一步 →</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Confirmation -->
+            <div class="step-content" id="step6">
+                <h2>确认配置 ✅</h2>
+                <p>请检查您的配置，确认无误后开始安装：</p>
+                
+                <div class="installation-output" id="configPreview">
+                    <!-- Configuration preview will be inserted here -->
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px;">
+                    <button class="btn btn-secondary btn-prev" onclick="prevStep()">← 上一步</button>
+                    <button class="btn btn-primary btn-next" onclick="startInstallation()">开始安装</button>
+                </div>
+            </div>
+
+            <!-- Step 8: Installation -->
+            <div class="step-content" id="step7">
+                <h2>正在安装... 🚀</h2>
+                <p>OpenBot 正在安装中，请稍候...</p>
+                
+                <div class="installation-output" id="installOutput">
+                    <!-- Installation output will be shown here -->
+                </div>
+                
+                <div id="installComplete" class="success-message hidden">
+                    <div class="success-icon">🎉</div>
+                    <h2>安装完成！</h2>
+                    <p>OpenBot 已成功安装并配置完毕</p>
+                    <p>服务将在 http://localhost:3000 上启动</p>
+                    <button class="btn btn-primary" onclick="finishSetup()">完成配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let selectedFeatures = [];
+
+        function showStep(step) {
+            // Hide all step contents
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected step
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((stepElem, index) => {
+                if (index === step) {
+                    stepElem.classList.add('active');
+                } else {
+                    stepElem.classList.remove('active');
+                }
+            });
+            
+            currentStep = step;
+            updateProgress();
+        }
+
+        function nextStep() {
+            if (currentStep < 7) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / 7) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function toggleFeature(feature) {
+            const card = event.currentTarget;
+            card.classList.toggle('selected');
+            
+            const index = selectedFeatures.indexOf(feature);
+            if (index > -1) {
+                selectedFeatures.splice(index, 1);
+            } else {
+                selectedFeatures.push(feature);
+            }
+        }
+
+        function checkSystem() {
+            // Simulate system check
+            document.getElementById('nodeVersion').value = 'v22.22.0';
+            document.getElementById('npmVersion').value = '10.9.4';
+            document.getElementById('memory').value = '16GB 可用';
+            document.getElementById('compatibility').value = '✅ 兼容';
+
+            document.getElementById('checkNextBtn').style.display = 'inline-block';
+        }
+
+        function toggleApiKeyInput() {
+            const provider = document.getElementById('aiProvider').value;
+            const apiKeyGroup = document.getElementById('apiKeyGroup');
+            const modelGroup = document.getElementById('modelGroup');
+            
+            if (provider) {
+                apiKeyGroup.style.display = 'block';
+                if (provider !== 'ollama') {
+                    modelGroup.style.display = 'block';
+                } else {
+                    modelGroup.style.display = 'none';
+                }
+            } else {
+                apiKeyGroup.style.display = 'none';
+                modelGroup.style.display = 'none';
+            }
+        }
+
+        function toggleChannelConfig(channel) {
+            const checkbox = document.getElementById(`enable${channel.charAt(0).toUpperCase() + channel.slice(1)}`);
+            const configDiv = document.getElementById(`${channel}Config`);
+            
+            if (checkbox.checked) {
+                configDiv.style.display = 'block';
+            } else {
+                configDiv.style.display = 'none';
+            }
+        }
+
+        function previewConfiguration() {
+            const config = {
+                port: document.getElementById('port').value,
+                environment: document.getElementById('environment').value,
+                logLevel: document.getElementById('logLevel').value,
+                enableDemo: document.getElementById('enableDemo').checked,
+                aiProvider: document.getElementById('aiProvider').value,
+                enableAdvancedFeatures: document.getElementById('enableAdvancedFeatures').checked,
+                enableFeishu: document.getElementById('enableFeishu').checked,
+                enableWechatWork: document.getElementById('enableWechatWork').checked,
+                enableDingtalk: document.getElementById('enableDingtalk').checked,
+                features: {
+                    memory: document.getElementById('featureMemory').checked,
+                    monitoring: document.getElementById('featureMonitoring').checked,
+                    scheduling: document.getElementById('featureScheduling').checked,
+                    webSearch: document.getElementById('featureWebSearch').checked,
+                    imageAnalysis: document.getElementById('featureImageAnalysis').checked,
+                    fileOps: document.getElementById('featureFileOps').checked,
+                    cmdExec: document.getElementById('featureCmdExec').checked
+                }
+            };
+
+            let preview = '# OpenBot 配置预览\n\n';
+            preview += `# 服务器配置\n`;
+            preview += `PORT=${config.port}\n`;
+            preview += `NODE_ENV=${config.environment}\n`;
+            preview += `LOG_LEVEL=${config.logLevel}\n\n`;
+            
+            preview += `# AI配置\n`;
+            if (config.aiProvider) {
+                preview += `${config.aiProvider.toUpperCase()}_API_KEY=***\n`;
+            } else {
+                preview += `# 未配置AI服务\n`;
+            }
+            
+            preview += `\n# 渠道配置\n`;
+            preview += `# 飞书: ${config.enableFeishu ? '已启用' : '已禁用'}\n`;
+            preview += `# 企业微信: ${config.enableWechatWork ? '已启用' : '已禁用'}\n`;
+            preview += `# 钉钉: ${config.enableDingtalk ? '已启用' : '已禁用'}\n`;
+            
+            preview += `\n# 功能模块\n`;
+            for (const [feature, enabled] of Object.entries(config.features)) {
+                preview += `# ${feature}: ${enabled ? '已启用' : '已禁用'}\n`;
+            }
+
+            document.getElementById('configPreview').textContent = preview;
+        }
+
+        function startInstallation() {
+            // Show configuration preview
+            previewConfiguration();
+            
+            // Switch to installation step
+            showStep(7);
+            
+            // Simulate installation process
+            const output = document.getElementById('installOutput');
+            output.textContent = '开始安装 OpenBot...\n';
+            
+            const steps = [
+                '正在检查系统环境...',
+                '正在安装依赖包...',
+                'npm WARN deprecated packages (will be resolved)...',
+                '正在创建配置文件...',
+                '正在设置目录结构...',
+                '正在初始化数据库(如适用)...',
+                '正在配置安全设置...',
+                '正在启动服务...',
+                '✅ 安装完成!',
+                '🚀 OpenBot 服务已启动',
+                '🌐 访问 http://localhost:3000 使用服务',
+                '📋 管理面板: http://localhost:3000/admin'
+            ];
+            
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < steps.length) {
+                    output.textContent += steps[i] + '\n';
+                    output.scrollTop = output.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    // Show completion message after a delay
+                    setTimeout(() => {
+                        document.getElementById('installComplete').classList.remove('hidden');
+                    }, 1000);
+                }
+            }, 800);
+        }
+
+        function finishSetup() {
+            alert('OpenBot 已准备就绪！您现在可以开始使用了。');
+            window.location.reload();
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
