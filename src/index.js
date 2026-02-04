@@ -1081,12 +1081,16 @@ app.get('/monitor/metrics', async (req, res) => {
   }
 });
 
-// 初始化健康检查API
-const healthCheckApi = new HealthCheckApi(chatProcessor, toolManager, monitoringService);
-
 // 系统健康检查
 app.get('/health/full', async (req, res) => {
   try {
+    // 初始化健康检查API - 使用chatProcessor内部的toolManager
+    const healthCheckApi = new HealthCheckApi(
+      chatProcessor, 
+      chatProcessor.toolManager, // 从chatProcessor获取toolManager实例
+      monitoringService
+    );
+    
     const result = await healthCheckApi.performHealthCheck();
     
     res.json({
