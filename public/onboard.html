@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenBot - 快速入门指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .step-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #4ecdc4;
+        }
+        
+        .step-content {
+            margin-left: 40px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .feature-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 OpenBot</h1>
+            <p>欢迎使用OpenBot - 功能强大的开源AI助手</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-title">开始使用</span>
+            <div class="step-content">
+                <p>OpenBot是一个功能强大的AI助手，能够帮助您执行各种任务。通过自然语言与OpenBot交互，它可以：</p>
+                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                    <li>• 执行文件操作（读取、写入、编辑）</li>
+                    <li>• 运行系统命令和脚本</li>
+                    <li>• 搜索网络并获取信息</li>
+                    <li>• 管理您的数据和文件</li>
+                    <li>• 与其他服务集成</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-title">核心功能</span>
+            <div class="step-content">
+                <p>OpenBot具备以下核心功能：</p>
+                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                    <li>• <strong>工具调用</strong>：可调用23+种专业工具</li>
+                    <li>• <strong>中文支持</strong>：流畅的中文交互体验</li>
+                    <li>• <strong>多渠道集成</strong>：支持飞书、企业微信、钉钉</li>
+                    <li>• <strong>记忆系统</strong>：记住对话上下文和重要信息</li>
+                    <li>• <strong>任务自动化</strong>：执行复杂的自动化任务</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-title">快速上手</span>
+            <div class="step-content">
+                <p>尝试以下示例命令：</p>
+                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                    <li>• "帮我读取README.md文件的内容"</li>
+                    <li>• "创建一个名为hello.txt的文件，内容为'Hello World'"</li>
+                    <li>• "搜索今天的天气情况"</li>
+                    <li>• "列出当前目录下的所有文件"</li>
+                    <li>• "告诉我系统健康状况如何"</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">4</span>
+            <span class="step-title">高级功能</span>
+            <div class="step-content">
+                <p>OpenBot还支持：</p>
+                <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                    <li>• <strong>定时任务</strong>：安排自动执行的任务</li>
+                    <li>• <strong>系统监控</strong>：监控系统性能和资源</li>
+                    <li>• <strong>文件管理</strong>：强大的文件操作功能</li>
+                    <li>• <strong>多语言支持</strong>：支持多种编程语言</li>
+                    <li>• <strong>扩展集成</strong>：可轻松扩展新功能</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-name">网络搜索</div>
+                <div class="feature-desc">实时获取网络信息</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📁</div>
+                <div class="feature-name">文件操作</div>
+                <div class="feature-desc">读写编辑各类文件</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-name">系统命令</div>
+                <div class="feature-desc">执行系统级操作</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-name">智能记忆</div>
+                <div class="feature-desc">记住重要上下文</div>
+            </div>
+        </div>
+        
+        <a href="/index.html" class="cta-button">开始使用OpenBot</a>
+    </div>
+
+    <script>
+        // 简单的进度动画
+        setTimeout(() => {
+            document.getElementById('progressFill').style.width = '100%';
+        }, 100);
+        
+        // 添加一些交互效果
+        document.querySelectorAll('.step').forEach(step => {
+            step.addEventListener('click', function() {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors'); // Add CORS support
 const EnhancedChatProcessor = require('./utils/enhancedChatProcessor');
 const ChannelsManager = require('./integrations/channelsManager');
@@ -14,6 +15,10 @@ const ConfigApi = require('./api/configApi');
 const FileApi = require('./api/fileApi');
 const MonitoringApi = require('./api/monitoringApi');
 const HealthCheckApi = require('./api/healthCheckApi');
+// OpenClaw Integration
+const OpenClawIntegration = require('./integrations/openclaw/openclaw-integration');
+const ChineseChatController = require('./controllers/chinese-chat-controller');
+const HelpManager = require('./utils/helpManager');
 
 // Initialize Express app
 const app = express();
@@ -23,6 +28,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Initialize enhanced chat processor
 const chatProcessor = new EnhancedChatProcessor();
@@ -1111,6 +1118,126 @@ app.get('/health/full', async (req, res) => {
     });
   }
 });
+
+// 初始化帮助管理器
+const helpManager = new HelpManager();
+
+// 中文聊天控制器
+const chineseChatController = new ChineseChatController();
+
+// 中文聊天端点
+app.post('/chinese-chat', async (req, res) => {
+  await chineseChatController.handleChatMessage(req, res);
+});
+
+// 帮助相关API端点
+
+// 获取完整帮助信息
+app.get('/help', (req, res) => {
+  res.json({
+    success: true,
+    data: helpManager.getFullHelp(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 获取快速帮助
+app.get('/help/quick', (req, res) => {
+  res.json({
+    success: true,
+    data: helpManager.getQuickHelp(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 获取特定类别帮助
+app.get('/help/category/:category', (req, res) => {
+  const category = req.params.category;
+  const result = helpManager.getCategoryHelp(category);
+  
+  if (result) {
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString()
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      error: `Category '${category}' not found`,
+      availableCategories: Object.keys(helpManager.commands),
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 搜索帮助命令
+app.get('/help/search', (req, res) => {
+  const { q } = req.query;
+  
+  if (!q) {
+    return res.status(400).json({
+      success: false,
+      error: 'Query parameter "q" is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  const results = helpManager.searchCommands(q);
+  
+  res.json({
+    success: true,
+    query: q,
+    results: results,
+    count: results.length,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 获取特定命令描述
+app.get('/help/command/:command', (req, res) => {
+  const command = req.params.command;
+  const description = helpManager.getCommandDescription(command);
+  
+  if (description) {
+    res.json({
+      success: true,
+      command: command,
+      description: description,
+      timestamp: new Date().toISOString()
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      error: `Command '${command}' not found`,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 获取中文聊天会话历史
+app.get('/chinese-chat/history/:userId', (req, res) => {
+  chineseChatController.getSessionHistory(req, res);
+});
+
+// 重置中文聊天会话
+app.post('/chinese-chat/reset/:userId', (req, res) => {
+  chineseChatController.resetSession(req, res);
+});
+
+// 获取中文聊天可用工具
+app.get('/chinese-chat/tools', (req, res) => {
+  chineseChatController.getAvailableTools(req, res);
+});
+
+// 获取中文帮助
+app.get('/chinese-chat/help', (req, res) => {
+  chineseChatController.getHelp(req, res);
+});
+
+// OpenClaw 原生模式
+const ClawNativeMode = require('./modes/claw-native-mode');
+const clawNativeMode = new ClawNativeMode(app);
 
 // 启动监控服务
 setTimeout(() => {

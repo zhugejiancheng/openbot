@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenBot - 帮助中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 1000px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .toc h2 {
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+        }
+        
+        .toc li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .toc a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .toc a:hover {
+            color: #4ecdc4;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section h2 {
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+        }
+        
+        .section h3 {
+            color: #ffd93d;
+            margin: 1rem 0 0.5rem 0;
+        }
+        
+        .section ul {
+            margin: 0.5rem 0 0.5rem 1.5rem;
+        }
+        
+        .section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .command {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 OpenBot 帮助中心</h1>
+            <p>全面了解OpenBot的功能和使用方法</p>
+        </div>
+        
+        <div class="toc">
+            <h2>📋 目录</h2>
+            <ul>
+                <li><a href="#overview">概述</a></li>
+                <li><a href="#basic-commands">基本命令</a></li>
+                <li><a href="#tools">可用工具</a></li>
+                <li><a href="#examples">使用示例</a></li>
+                <li><a href="#api">API接口</a></li>
+                <li><a href="#troubleshooting">故障排除</a></li>
+            </ul>
+        </div>
+        
+        <div class="section" id="overview">
+            <h2>概览</h2>
+            <p>OpenBot是一个功能强大的开源AI助手，能够执行各种任务，包括文件操作、系统命令执行、网络搜索等。通过自然语言与OpenBot交互，它可以理解和执行复杂的指令。</p>
+        </div>
+        
+        <div class="section" id="basic-commands">
+            <h2>基本命令</h2>
+            <h3>通用命令</h3>
+            <ul>
+                <li><span class="command">help</span> 或 <span class="command">帮助</span> - 显示帮助信息</li>
+                <li><span class="command">/help</span> - 显示详细帮助信息</li>
+                <li><span class="command">/tools</span> - 显示可用工具列表</li>
+                <li><span class="command">/health</span> - 显示系统健康状态</li>
+                <li><span class="command">/config</span> - 显示系统配置</li>
+            </ul>
+            
+            <h3>聊天相关</h3>
+            <ul>
+                <li><span class="command">clear</span> 或 <span class="command">清空对话</span> - 清空当前对话历史</li>
+                <li><span class="command">history</span> 或 <span class="command">历史</span> - 显示对话历史</li>
+            </ul>
+        </div>
+        
+        <div class="section" id="tools">
+            <h2>可用工具</h2>
+            <p>OpenBot集成了多种工具，可以通过自然语言指令调用：</p>
+            
+            <h3>文件操作工具</h3>
+            <ul>
+                <li><span class="command">read</span> - 读取文件内容</li>
+                <li><span class="command">write</span> - 写入内容到文件</li>
+                <li><span class="command">edit</span> - 编辑文件内容</li>
+                <li><span class="command">exec</span> - 执行系统命令</li>
+                <li><span class="command">process</span> - 管理后台进程</li>
+            </ul>
+            
+            <h3>网络工具</h3>
+            <ul>
+                <li><span class="command">web_search</span> - 搜索网络</li>
+                <li><span class="command">web_fetch</span> - 抓取网页内容</li>
+                <li><span class="command">browser</span> - 控制浏览器</li>
+                <li><span class="command">image</span> - 分析图像</li>
+            </ul>
+            
+            <h3>数据管理工具</h3>
+            <ul>
+                <li><span class="command">feishu_doc</span> - 飞书文档操作</li>
+                <li><span class="command">feishu_wiki</span> - 飞书知识库操作</li>
+                <li><span class="command">feishu_drive</span> - 飞书云文档操作</li>
+                <li><span class="command">feishu_bitable</span> - 飞书多维表格操作</li>
+            </ul>
+            
+            <h3>系统管理工具</h3>
+            <ul>
+                <li><span class="command">cron</span> - 定时任务管理</li>
+                <li><span class="command">message</span> - 消息发送</li>
+                <li><span class="command">memory_search</span> - 搜索记忆</li>
+                <li><span class="command">memory_get</span> - 获取记忆片段</li>
+            </ul>
+        </div>
+        
+        <div class="section" id="examples">
+            <h2>使用示例</h2>
+            <h3>文件操作</h3>
+            <ul>
+                <li><span class="command">请读取 README.md 文件</span> - 读取指定文件内容</li>
+                <li><span class="command">创建一个名为 hello.txt 的文件，内容为 "Hello World"</span> - 创建新文件</li>
+                <li><span class="command">将 "新的内容" 写入到 test.txt 文件中</span> - 写入文件</li>
+                <li><span class="command">编辑 config.json 文件，将 "port" 改为 8080</span> - 编辑文件</li>
+            </ul>
+            
+            <h3>系统命令</h3>
+            <ul>
+                <li><span class="command">执行命令 ls -la</span> - 列出当前目录内容</li>
+                <li><span class="command">运行 df -h 命令查看磁盘使用情况</span> - 检查磁盘空间</li>
+                <li><span class="command">执行 ps aux 命令</span> - 查看系统进程</li>
+            </ul>
+            
+            <h3>网络搜索</h3>
+            <ul>
+                <li><span class="command">搜索人工智能最新发展趋势</span> - 搜索网络信息</li>
+                <li><span class="command">获取 https://example.com 页面内容</span> - 抓取网页</li>
+                <li><span class="command">分析这张图片 [上传图片]</span> - 图像分析</li>
+            </ul>
+            
+            <h3>工具组合</h3>
+            <ul>
+                <li><span class="command">搜索今天的天气，然后将结果保存到 weather.txt 文件中</span> - 组合多个操作</li>
+                <li><span class="command">列出当前目录的文件，然后将结果保存下来</span> - 文件操作结合</li>
+            </ul>
+        </div>
+        
+        <div class="section" id="api">
+            <h2>API接口</h2>
+            <p>OpenBot提供丰富的API接口，可用于程序化访问：</p>
+            
+            <h3>基本接口</h3>
+            <ul>
+                <li><span class="command">GET /</span> - 获取基本信息</li>
+                <li><span class="command">GET /health</span> - 健康检查</li>
+                <li><span class="command">POST /chat</span> - 英文聊天接口</li>
+                <li><span class="command">POST /chinese-chat</span> - 中文聊天接口</li>
+                <li><span class="command">GET /tools</span> - 获取可用工具列表</li>
+            </ul>
+            
+            <h3>文件操作接口</h3>
+            <ul>
+                <li><span class="command">GET /files/list</span> - 列出文件</li>
+                <li><span class="command">GET /files/read</span> - 读取文件</li>
+                <li><span class="command">POST /files/write</span> - 写入文件</li>
+                <li><span class="command">POST /files/delete</span> - 删除文件</li>
+            </ul>
+            
+            <h3>系统监控接口</h3>
+            <ul>
+                <li><span class="command">GET /monitor/system-info</span> - 系统信息</li>
+                <li><span class="command">GET /monitor/cpu-usage</span> - CPU使用情况</li>
+                <li><span class="command">GET /monitor/memory-usage</span> - 内存使用情况</li>
+            </ul>
+        </div>
+        
+        <div class="section" id="troubleshooting">
+            <h2>故障排除</h2>
+            <h3>常见问题</h3>
+            <ul>
+                <li><strong>无法执行命令</strong>: 检查命令语法是否正确，或是否具有相应权限</li>
+                <li><strong>文件操作失败</strong>: 确认文件路径是否存在，或是否有足够权限</li>
+                <li><strong>网络搜索无结果</strong>: 检查网络连接，或尝试更具体的搜索词</li>
+                <li><strong>工具不可用</strong>: 检查系统配置，确保所需依赖已安装</li>
+            </ul>
+            
+            <h3>获取支持</h3>
+            <ul>
+                <li>查阅此帮助文档</li>
+                <li>访问 <a href="/onboard.html" style="color: #4ecdc4;">用户引导</a> 页面</li>
+                <li>在聊天中输入 "帮助" 或 "/help"</li>
+                <li>查看系统健康状态: <span class="command">/health</span></li>
+            </ul>
+        </div>
+        
+        <a href="/index.html" class="back-button">返回聊天界面</a>
+        <a href="/onboard.html" class="back-button">新手引导</a>
+    </div>
+</body>
+</html>

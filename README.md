@@ -15,10 +15,21 @@
 - **🧠 记忆管理** - 保持对话上下文
 - **🔗 API集成** - 集成各种外部服务
 - **🇨🇳 国产渠道** - 支持飞书、企业微信、钉钉
+- **🌐 中文支持** - 完整的中文交互体验
 - **📊 监控服务** - 主动监测和提醒功能
 - **🔄 任务调度** - 自动化任务执行和管理
+- **🧩 OpenClaw集成** - 集成OpenClaw的强大功能
+- **🎓 用户引导** - 完整的onboard新用户体验
+- **🎨 图形界面** - 现代化的网页聊天界面
+- **🔧 系统管理** - 支持OpenClaw CLI命令（setup, configure, status, doctor, sessions等）
+- **⚙️ 配置管理** - 支持系统配置、健康检查和状态监控
 
 ## 🚀 快速开始
+
+### 用户引导 (Onboard)
+首次使用OpenBot？请先访问我们的用户引导页面：
+- **在线引导**: [http://localhost:3000/onboard.html](http://localhost:3000/onboard.html)
+- **快速了解** OpenBot的核心功能和使用方法
 
 ### 系统要求
 - **Node.js** 14.x 或更高版本
@@ -26,7 +37,20 @@
 
 ### 安装方式
 
-#### 方式一：图形化安装向导 (推荐)
+#### 方式一：中文一键安装 (推荐)
+1. **下载并运行中文安装脚本**：
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/zhugejiancheng/openbot/main/install-chinese.sh | bash
+   ```
+   
+   或者手动下载：
+   ```bash
+   wget https://raw.githubusercontent.com/zhugejiancheng/openbot/main/install-chinese.sh
+   chmod +x install-chinese.sh
+   ./install-chinese.sh
+   ```
+
+#### 方式二：图形化安装向导
 1. 克隆项目：
    ```bash
    git clone https://github.com/zhugejiancheng/openbot.git
@@ -40,15 +64,8 @@
    ```
 
 3. 按照界面提示点击几下鼠标完成配置
-   - 系统环境检查
-   - 基础参数配置（端口、环境等）
-   - AI服务配置（可选）
-   - 国产渠道配置（飞书、企业微信、钉钉）
-   - 功能模块选择
-   - 自动生成配置文件
-   - 安装进度可视化
 
-#### 方式二：交互式命令行安装
+#### 方式三：交互式命令行安装
 1. **克隆项目**
    ```bash
    git clone https://github.com/zhugejiancheng/openbot.git
@@ -60,13 +77,7 @@
    ./install.sh
    ```
 
-3. **配置环境** (可选但推荐)
-   ```bash
-   cp .env.example .env
-   # 编辑 .env 文件，添加您的API密钥
-   ```
-
-#### 方式三：手动安装
+#### 方式四：手动安装
 ```bash
 npm install
 ```
@@ -90,20 +101,93 @@ npm run dev  # 需要先安装 nodemon: npm install -g nodemon
 
 服务启动后，访问 `http://localhost:3000` 查看基本信息。
 
+## 🌐 中文交互功能
+
+### 中文聊天接口
+- `POST /chinese-chat` - 中文聊天接口，支持自然语言指令
+- `GET /chinese-chat/tools` - 获取中文工具列表
+- `GET /chinese-chat/help` - 获取中文帮助
+- `GET /chinese-chat/history/:userId` - 获取中文聊天历史
+- `POST /chinese-chat/reset/:userId` - 重置中文聊天历史
+
+### 中文指令示例
+OpenBot 现在支持中文自然语言指令：
+
+```bash
+# 使用 curl 测试中文聊天
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "请读取 /etc/passwd 文件", "userId": "my-user"}'
+
+# 搜索网络
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "搜索 人工智能最新发展", "userId": "my-user"}'
+
+# 执行命令
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "执行命令 ls -la", "userId": "my-user"}'
+
+# 获取帮助
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "帮助", "userId": "my-user"}'
+
+# 获取工具帮助
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "工具帮助", "userId": "my-user"}'
+
+# 获取onboard帮助
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "onboard帮助", "userId": "my-user"}'
+
+# 新用户引导
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "用户引导", "userId": "my-user"}'
+
+# 入门帮助
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "入门帮助", "userId": "my-user"}'
+
+# 系统状态检查
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "状态检查", "userId": "my-user"}'
+
+# 系统健康诊断
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "系统诊断", "userId": "my-user"}'
+
+# 会话管理
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "会话管理", "userId": "my-user"}'
+```
+
 ## 🛠️ API 接口
 
 ### 基础接口
 - `GET /` - 获取基本信息
 - `GET /health` - 健康检查
-- `POST /chat` - 与OpenBot对话
+- `POST /chat` - 与OpenBot对话（英文）
+- `POST /chinese-chat` - 与OpenBot对话（中文）
 
 ### 工具接口
 - `GET /tools` - 获取可用工具列表
 - `POST /tool/:toolName` - 执行特定工具
+- `GET /chinese-chat/tools` - 获取中文工具列表
 
 ### 对话接口
-- `GET /conversation/:userId` - 获取对话历史
-- `POST /conversation/reset/:userId` - 重置对话
+- `GET /conversation/:userId` - 获取对话历史（英文）
+- `POST /conversation/reset/:userId` - 重置对话（英文）
+- `GET /chinese-chat/history/:userId` - 获取中文聊天历史
+- `POST /chinese-chat/reset/:userId` - 重置中文聊天历史
 
 ### 国产渠道接口
 - `GET /channels` - 获取可用渠道
@@ -134,6 +218,13 @@ npm run dev  # 需要先安装 nodemon: npm install -g nodemon
 ### 系统健康检查接口
 - `GET /health/full` - 获取完整的系统健康状况报告
 
+### 帮助系统接口
+- `GET /help` - 获取完整帮助信息
+- `GET /help/quick` - 获取快速帮助
+- `GET /help/category/:category` - 获取特定类别帮助
+- `GET /help/search?q=query` - 搜索帮助内容
+- `GET /help/command/:command` - 获取特定命令描述
+
 ### 监控和任务接口
 - `POST /monitor/add` - 添加监控器
 - `GET /monitor/status` - 监控状态
@@ -163,44 +254,111 @@ npm run dev  # 需要先安装 nodemon: npm install -g nodemon
 
 ## 📖 使用示例
 
-### 与OpenBot对话
+### 与OpenBot进行中文对话
 ```bash
-curl -X POST http://localhost:3000/chat \
+curl -X POST http://localhost:3000/chinese-chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "你好", "userId": "my-user"}'
+  -d '{"message": "你好，请介绍一下自己", "userId": "my-user"}'
 ```
 
-### 获取可用工具
+### 执行中文指令
 ```bash
-curl http://localhost:3000/tools
+# 读取文件
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "请读取 package.json 文件内容", "userId": "my-user"}'
+
+# 搜索网络
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "帮我搜索一下人工智能的发展历程", "userId": "my-user"}'
+
+# 执行系统命令
+curl -X POST http://localhost:3000/chinese-chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "执行命令 df -h", "userId": "my-user"}'
 ```
 
-### 执行特定工具
+### 获取中文帮助
 ```bash
-curl -X POST http://localhost:3000/tool/exec \
-  -H "Content-Type: application/json" \
-  -d '{"command": "ls -la"}'
+curl http://localhost:3000/chinese-chat/help
 ```
 
 ## 🏗️ 架构说明
 
-OpenBot采用模块化架构：
+OpenBot采用模块化架构，新增了OpenClaw集成：
 
 ```
 src/
-├── index.js              # 主服务器入口
+├── index.js                      # 主服务器入口
 ├── config/
-│   └── config.js         # 配置管理
+│   └── config.js                 # 配置管理
 ├── utils/
 │   ├── enhancedChatProcessor.js  # 增强聊天处理
-│   ├── toolManager.js    # 工具管理器
-│   ├── monitoringService.js  # 监控服务
-│   └── taskScheduler.js  # 任务调度器
+│   ├── chinese-nlp.js           # 中文自然语言处理
+│   ├── toolManager.js           # 工具管理器
+│   ├── monitoringService.js     # 监控服务
+│   └── taskScheduler.js         # 任务调度器
+├── controllers/
+│   └── chinese-chat-controller.js # 中文聊天控制器
 └── integrations/
-    ├── channelsManager.js # 渠道管理器
-    ├── feishuIntegration.js    # 飞书集成
-    ├── wechatWorkIntegration.js # 企业微信集成
-    └── dingtalkIntegration.js  # 钉钉集成
+    ├── openclaw/
+    │   ├── openclaw-integration.js  # OpenClaw功能集成
+    │   └── README.md
+    ├── channelsManager.js        # 渠道管理器
+    ├── feishuIntegration.js      # 飞书集成
+    ├── wechatWorkIntegration.js  # 企业微信集成
+    └── dingtalkIntegration.js    # 钉钉集成
+```
+
+## 🌟 OpenClaw功能集成
+
+OpenBot现已集成OpenClaw的强大功能：
+
+### 工具能力
+- 文件操作（read, write, edit）
+- 系统命令执行（exec, process）
+- 网络搜索和抓取（web_search, web_fetch）
+- AI图像分析（image）
+- 飞书集成工具（feishu_*系列）
+- 定时任务管理（cron）
+- 消息发送（message）
+- 记忆管理（memory_search, memory_get）
+
+### 中文自然语言处理
+- 智能指令解析
+- 参数自动提取
+- 工具映射和执行
+- 结果格式化输出
+
+### OpenClaw原生模式
+OpenBot支持OpenClaw原生模式，保持原有特性和交互方式：
+
+- **原生工具接口**: `/claw/native` - 直接使用OpenClaw工具格式
+- **中文增强接口**: `/claw/chinese` - 支持中文指令的OpenClaw工具
+- **直接工具访问**: `/claw/tool/{toolName}` - 直接访问特定工具
+- **会话管理**: `/claw/session/*` - 会话历史和管理
+- **工具列表**: `/claw/tools` - 获取可用工具清单
+
+使用示例：
+```bash
+# 原生OpenClaw接口
+curl -X POST http://localhost:3000/claw/native \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "read", "arguments": {"path": "./README.md"}}'
+
+# 中文增强接口
+curl -X POST http://localhost:3000/claw/chinese \
+  -H "Content-Type: application/json" \
+  -d '{"command": "read", "params": {"path": "./README.md"}}'
+
+# 直接工具访问
+curl -X POST http://localhost:3000/claw/tool/read \
+  -H "Content-Type: application/json" \
+  -d '{"path": "./README.md"}'
+
+# 启动原生模式
+npm run claw-native
 ```
 
 ## 🤝 贡献

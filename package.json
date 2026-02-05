@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "claw-native": "CLAW_NATIVE_MODE=true node src/index.js",
     "test": "jest"
   },
   "keywords": [
