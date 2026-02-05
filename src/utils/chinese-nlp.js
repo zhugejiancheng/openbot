@@ -95,6 +95,8 @@ class ChineseNLPProcessor {
       '设备配对': 'openclaw_cli',
       '节点管理': 'openclaw_cli',
       '安全设置': 'openclaw_cli',
+      '安全检查': 'openclaw_cli',
+      '安全审计': 'openclaw_cli',
       '技能管理': 'openclaw_cli',
       '系统更新': 'openclaw_cli',
       '浏览器管理': 'openclaw_cli',
@@ -340,6 +342,8 @@ class ChineseNLPProcessor {
           params.command = 'devices';
         } else if (cliInstruction.toLowerCase().includes('节点') || cliInstruction.toLowerCase().includes('nodes')) {
           params.command = 'nodes';
+        } else if (cliInstruction.toLowerCase().includes('安全审计') || (cliInstruction.toLowerCase().includes('安全') && cliInstruction.toLowerCase().includes('audit'))) {
+          params.command = 'security audit';
         } else if (cliInstruction.toLowerCase().includes('安全') || cliInstruction.toLowerCase().includes('security')) {
           params.command = 'security';
         } else if (cliInstruction.toLowerCase().includes('技能') || cliInstruction.toLowerCase().includes('skills')) {
