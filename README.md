@@ -375,3 +375,39 @@ MIT License
   <p>由 OpenBot 团队 ❤️ 开发</p>
   <p><em>让AI助手更智能、更易用</em></p>
 </div>
+## 🆕 OpenClaw 功能集成
+
+### 核心工具
+
+OpenBot 现已集成 OpenClaw 的强大工具系统：
+
+- 📁 **文件操作** - read, write, edit
+- 💻 **命令执行** - exec, process
+- 🌐 **网络功能** - web_search, web_fetch
+- 💬 **消息通信** - message, browser
+- 🧠 **记忆系统** - memory_search, memory_get
+- 🤖 **子代理** - sessions, subagents
+
+### Feishu 深度集成
+
+- ✅ 完整的飞书消息发送
+- ✅ 文件上传和管理
+- ✅ 用户和机器人信息
+- ✅ 自动令牌刷新
+
+### 使用示例
+
+```javascript
+const OpenClawTools = require('./src/core/tools');
+const FeishuExtension = require('./src/core/extensions/feishu-extension');
+
+// 文件操作
+const tools = new OpenClawTools();
+await tools.write('test.txt', 'Hello World');
+
+// 飞书消息
+const feishu = new FeishuExtension();
+await feishu.sendTextMessage('user_id', 'Hello!');
+```
+
+详细文档请查看 [INTEGRATION_SUMMARY.md](./INTEGRATION_SUMMARY.md)
